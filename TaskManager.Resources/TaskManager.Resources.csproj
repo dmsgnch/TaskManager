@@ -8,4 +8,17 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Update="CommonResources\CommonResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CommonResources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>TaskManager.Resources.CommonResources</CustomToolNamespace>
+    </EmbeddedResource>
+    <Compile Update="CommonResources\CommonResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CommonResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>
