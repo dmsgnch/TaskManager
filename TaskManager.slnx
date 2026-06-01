@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="TaskManager.Core/TaskManager.Core.csproj" />
+  <Project Path="TaskManager.Models/TaskManager.Models.csproj" />
+  <Project Path="TaskManager.Resources/TaskManager.Resources.csproj" />
+  <Project Path="TaskManager.ViewModels/TaskManager.ViewModels.csproj" />
+  <Project Path="TaskManager/TaskManager.csproj" />
+</Solution>

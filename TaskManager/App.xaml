@@ -1,0 +1,11 @@
+﻿<Application x:Class="TaskManager.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:TaskManager.ViewModels;assembly=TaskManager.ViewModels"
+             xmlns:core="clr-namespace:TaskManager.Resources.Core;assembly=TaskManager.Resources"
+             StartupUri="/Views/Windows/MainWindow.xaml">
+    <Application.Resources>
+        <core:LocalizationManager x:Key="LocalizationManager" />
+        <viewModels:ViewModelLocator x:Key="Locator" />
+    </Application.Resources>
+</Application>
