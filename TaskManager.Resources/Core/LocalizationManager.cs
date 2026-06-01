@@ -1,13 +1,12 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using AudioVideoRecorder.Resources.CommonResources;
 
 namespace TaskManager.Resources.Core;
 
 public class LocalizationManager : INotifyPropertyChanged
 {
-    public CommonResources CommonResources
+    public CommonResources.CommonResources CommonResources
     {
         get;
         private set
@@ -29,7 +28,7 @@ public class LocalizationManager : INotifyPropertyChanged
         CultureInfo.CurrentCulture = culture;
         CultureInfo.CurrentUICulture = culture;
 
-        CommonResources = new CommonResources();
+        CommonResources = new CommonResources.CommonResources();
     }
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
