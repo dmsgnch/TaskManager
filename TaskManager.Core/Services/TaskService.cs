@@ -1,28 +1,19 @@
 using Serilog;
 using TaskManager.Core.Services.Abstracts;
 using TaskManager.Core.ApiClients.Abstracts;
+using TaskManager.Models.Constants;
 using TaskManager.Models.Models;
 
 namespace TaskManager.Core.Services;
 
 public class TaskService : ITaskService
 {
-    private const string TasksNotInitializedMessage = "Tasks are not initialized.";
-    private const string InitializeTasksFailedMessage = "Failed to initialize tasks.";
-    private const string CreateTaskFailedMessage = "Failed to create task.";
-    private const string EditTaskFailedMessage = "Failed to edit task.";
-
     private readonly ITaskApiClient _taskApiClient;
     private readonly SemaphoreSlim _tasksGate = new(1, 1);
 
     private int _nextLocalTaskId = 1;
-    private bool _isInitialized;
 
-    private List<TaskItem>? Tasks { get; set; }
-
-    public bool IsInitialized => Volatile.Read(ref _isInitialized);
-
-    public event EventHandler? TasksInitialized;
+    private List<TaskItem> Tasks { get; set; } = new();
 
     public event EventHandler<TaskItem>? TaskAdded;
 
@@ -33,43 +24,32 @@ public class TaskService : ITaskService
         _taskApiClient = taskApiClient;
     }
 
-    public async Task<OperationResult<IReadOnlyList<TaskItem>>> InitializeTasksAsync(
-        CancellationToken cancellationToken = default)
+    public async Task<OperationResult<IReadOnlyList<TaskItem>>> LoadTasksAsync(CancellationToken cancellationToken =
+        default)
     {
         OperationResult<IReadOnlyList<TaskItem>> result;
-        bool shouldRaiseTasksInitialized = false;
 
         await _tasksGate.WaitAsync(cancellationToken).ConfigureAwait(false);
 
         try
         {
-            if (Tasks is not null)
+            var tasksResult = await _taskApiClient
+                .GetTasksAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!tasksResult.IsSuccess)
             {
-                result = OperationResult<IReadOnlyList<TaskItem>>.Success(CreateTasksSnapshot());
+                result = OperationResult<IReadOnlyList<TaskItem>>.Fail(tasksResult.ErrorKey);
             }
             else
             {
-                var tasksResult = await _taskApiClient
-                    .GetTasksAsync(cancellationToken)
-                    .ConfigureAwait(false);
+                Tasks = tasksResult.Value?.Select(CloneTask).ToList() ?? [];
 
-                if (!tasksResult.IsValid)
-                {
-                    result = OperationResult<IReadOnlyList<TaskItem>>.Fail(tasksResult.ErrorMessage);
-                }
-                else
-                {
-                    Tasks = tasksResult.Value?.Select(CloneTask).ToList() ?? [];
+                _nextLocalTaskId = Tasks.Count > 0
+                    ? Tasks.Max(task => task.Id) + 1
+                    : 1;
 
-                    _nextLocalTaskId = Tasks.Count > 0
-                        ? Tasks.Max(task => task.Id) + 1
-                        : 1;
-
-                    Volatile.Write(ref _isInitialized, true);
-                    shouldRaiseTasksInitialized = true;
-
-                    result = OperationResult<IReadOnlyList<TaskItem>>.Success(CreateTasksSnapshot());
-                }
+                result = OperationResult<IReadOnlyList<TaskItem>>.Success(CreateTasksSnapshot());
             }
         }
         catch (OperationCanceledException)
@@ -80,43 +60,17 @@ public class TaskService : ITaskService
         {
             Log.Error(ex, "Failed to initialize tasks");
 
-            result = OperationResult<IReadOnlyList<TaskItem>>.Fail(InitializeTasksFailedMessage);
+            result = OperationResult<IReadOnlyList<TaskItem>>.Fail(OperationErrorKeys.InitializeTasksFailed);
         }
         finally
         {
             _tasksGate.Release();
         }
-
-        if (shouldRaiseTasksInitialized && result.IsValid)
-        {
-            RaiseTasksInitialized();
-        }
-
+        
         return result;
     }
 
-    public async Task<OperationResult<IReadOnlyList<TaskItem>>> GetTasksSnapshotAsync(
-        CancellationToken cancellationToken = default)
-    {
-        await _tasksGate.WaitAsync(cancellationToken).ConfigureAwait(false);
-
-        try
-        {
-            if (Tasks is null)
-            {
-                return OperationResult<IReadOnlyList<TaskItem>>.Fail(TasksNotInitializedMessage);
-            }
-
-            return OperationResult<IReadOnlyList<TaskItem>>.Success(CreateTasksSnapshot());
-        }
-        finally
-        {
-            _tasksGate.Release();
-        }
-    }
-
-    public async Task<OperationResult<TaskItem>> TryCreateLocalTaskAsync(
-        TaskEditParams taskEditParams,
+    public async Task<OperationResult<TaskItem>> TryCreateLocalTaskAsync(TaskEditParams taskEditParams,
         CancellationToken cancellationToken = default)
     {
         OperationResult<TaskItem> result;
@@ -125,19 +79,14 @@ public class TaskService : ITaskService
 
         try
         {
-            if (Tasks is null)
+            if (!ValidateTaskEditParams(taskEditParams, out string errorKey))
             {
-                result = OperationResult<TaskItem>.Fail(TasksNotInitializedMessage);
-            }
-            else if (!ValidateTaskEditParams(taskEditParams, out string errorMessage))
-            {
-                result = OperationResult<TaskItem>.Fail(errorMessage);
+                result = OperationResult<TaskItem>.Fail(errorKey);
             }
             else
             {
-                var createdTask = new TaskItem
+                var createdTask = new TaskItem(_nextLocalTaskId++)
                 {
-                    Id = _nextLocalTaskId++,
                     UserId = taskEditParams.UserId,
                     Title = taskEditParams.Title.Trim(),
                     IsCompleted = taskEditParams.IsCompleted
@@ -156,14 +105,14 @@ public class TaskService : ITaskService
         {
             Log.Error(ex, "Failed to create local task");
 
-            result = OperationResult<TaskItem>.Fail(CreateTaskFailedMessage);
+            result = OperationResult<TaskItem>.Fail(OperationErrorKeys.CreateTaskFailed);
         }
         finally
         {
             _tasksGate.Release();
         }
 
-        if (result is { IsValid: true, Value: not null })
+        if (result is { IsSuccess: true, Value: not null })
         {
             RaiseTaskAdded(result.Value);
         }
@@ -171,8 +120,7 @@ public class TaskService : ITaskService
         return result;
     }
 
-    public async Task<OperationResult<TaskItem>> TryEditLocalTaskAsync(
-        int taskId,
+    public async Task<OperationResult<TaskItem>> TryEditLocalTaskAsync(int taskId,
         TaskEditParams taskEditParams,
         CancellationToken cancellationToken = default)
     {
@@ -182,13 +130,9 @@ public class TaskService : ITaskService
 
         try
         {
-            if (Tasks is null)
+            if (!ValidateTaskEditParams(taskEditParams, out string errorKey))
             {
-                result = OperationResult<TaskItem>.Fail(TasksNotInitializedMessage);
-            }
-            else if (!ValidateTaskEditParams(taskEditParams, out string errorMessage))
-            {
-                result = OperationResult<TaskItem>.Fail(errorMessage);
+                result = OperationResult<TaskItem>.Fail(errorKey);
             }
             else
             {
@@ -196,13 +140,12 @@ public class TaskService : ITaskService
 
                 if (taskIndex < 0)
                 {
-                    result = OperationResult<TaskItem>.Fail($"Task with id {taskId} was not found.");
+                    result = OperationResult<TaskItem>.Fail(OperationErrorKeys.TaskNotFound);
                 }
                 else
                 {
-                    var editedTask = new TaskItem
+                    var editedTask = new TaskItem(taskId)
                     {
-                        Id = taskId,
                         UserId = taskEditParams.UserId,
                         Title = taskEditParams.Title.Trim(),
                         IsCompleted = taskEditParams.IsCompleted
@@ -222,31 +165,19 @@ public class TaskService : ITaskService
         {
             Log.Error(ex, "Failed to edit local task. Task id: {TaskId}", taskId);
 
-            result = OperationResult<TaskItem>.Fail(EditTaskFailedMessage);
+            result = OperationResult<TaskItem>.Fail(OperationErrorKeys.EditTaskFailed);
         }
         finally
         {
             _tasksGate.Release();
         }
 
-        if (result is { IsValid: true, Value: not null })
+        if (result is { IsSuccess: true, Value: not null })
         {
             RaiseTaskEdited(result.Value);
         }
 
         return result;
-    }
-
-    private void RaiseTasksInitialized()
-    {
-        try
-        {
-            TasksInitialized?.Invoke(this, EventArgs.Empty);
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Error during TasksInitialized invoking");
-        }
     }
 
     private void RaiseTaskAdded(TaskItem taskItem)
@@ -273,33 +204,27 @@ public class TaskService : ITaskService
         }
     }
 
-    private static bool ValidateTaskEditParams(
-        TaskEditParams taskEditParams,
-        out string errorMessage)
+    private static bool ValidateTaskEditParams(TaskEditParams taskEditParams,
+        out string errorKey)
     {
         if (string.IsNullOrWhiteSpace(taskEditParams.Title))
         {
-            errorMessage = "Task title is required.";
+            errorKey = OperationErrorKeys.TaskTitleRequired;
             return false;
         }
 
         if (taskEditParams.UserId <= 0)
         {
-            errorMessage = "User id must be greater than zero.";
+            errorKey = OperationErrorKeys.UserIdMustBeGreaterThanZero;
             return false;
         }
 
-        errorMessage = string.Empty;
+        errorKey = string.Empty;
         return true;
     }
 
     private IReadOnlyList<TaskItem> CreateTasksSnapshot()
     {
-        if (Tasks is null)
-        {
-            return [];
-        }
-
         return Tasks
             .Select(CloneTask)
             .ToList()
@@ -308,9 +233,8 @@ public class TaskService : ITaskService
 
     private static TaskItem CloneTask(TaskItem taskItem)
     {
-        return new TaskItem
+        return new TaskItem(taskItem.Id)
         {
-            Id = taskItem.Id,
             UserId = taskItem.UserId,
             Title = taskItem.Title,
             IsCompleted = taskItem.IsCompleted

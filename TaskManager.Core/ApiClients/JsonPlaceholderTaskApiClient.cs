@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using TaskManager.Core.ApiClients.Abstracts;
 using TaskManager.Core.ApiClients.Dtos;
+using TaskManager.Models.Constants;
 using TaskManager.Models.Models;
 
 namespace TaskManager.Core.ApiClients;
@@ -9,12 +10,6 @@ namespace TaskManager.Core.ApiClients;
 public class JsonPlaceholderTaskApiClient : ITaskApiClient
 {
     private const string RequestUri = "todos";
-    private const string EmptyResponseMessage = "Server returned an empty response.";
-    private const string InvalidResponseMessage = "Server returned tasks in an unexpected format.";
-    private const string NetworkErrorMessage = "Unable to load tasks. Check your internet connection and try again.";
-    private const string TimeoutMessage = "Task loading timed out. Try again later.";
-    private const string UnexpectedErrorMessage = "Unexpected error occurred while loading tasks.";
-    
     private readonly HttpClient _httpClient;
 
     public JsonPlaceholderTaskApiClient(HttpClient httpClient)
@@ -33,8 +28,7 @@ public class JsonPlaceholderTaskApiClient : ITaskApiClient
 
             if (!response.IsSuccessStatusCode)
             {
-                return OperationResult<IReadOnlyList<TaskItem>>.Fail(
-                    $"Server returned error {(int)response.StatusCode} ({response.ReasonPhrase}).");
+                return OperationResult<IReadOnlyList<TaskItem>>.Fail(OperationErrorKeys.LoadTasksServerError);
             }
 
             var todos = await response.Content
@@ -43,12 +37,11 @@ public class JsonPlaceholderTaskApiClient : ITaskApiClient
 
             if (todos is null)
             {
-                return OperationResult<IReadOnlyList<TaskItem>>.Fail(EmptyResponseMessage);
+                return OperationResult<IReadOnlyList<TaskItem>>.Fail(OperationErrorKeys.LoadTasksEmptyResponse);
             }
 
-            var tasks = todos.Select(x => new TaskItem
+            var tasks = todos.Select(x => new TaskItem(x.Id)
             {
-                Id = x.Id,
                 UserId = x.UserId,
                 Title = x.Title,
                 IsCompleted = x.Completed
@@ -62,23 +55,23 @@ public class JsonPlaceholderTaskApiClient : ITaskApiClient
         }
         catch (TaskCanceledException)
         {
-            return OperationResult<IReadOnlyList<TaskItem>>.Fail(TimeoutMessage);
+            return OperationResult<IReadOnlyList<TaskItem>>.Fail(OperationErrorKeys.LoadTasksTimeout);
         }
         catch (HttpRequestException)
         {
-            return OperationResult<IReadOnlyList<TaskItem>>.Fail(NetworkErrorMessage);
+            return OperationResult<IReadOnlyList<TaskItem>>.Fail(OperationErrorKeys.LoadTasksNetworkError);
         }
         catch (JsonException)
         {
-            return OperationResult<IReadOnlyList<TaskItem>>.Fail(InvalidResponseMessage);
+            return OperationResult<IReadOnlyList<TaskItem>>.Fail(OperationErrorKeys.LoadTasksInvalidResponse);
         }
         catch (NotSupportedException)
         {
-            return OperationResult<IReadOnlyList<TaskItem>>.Fail(InvalidResponseMessage);
+            return OperationResult<IReadOnlyList<TaskItem>>.Fail(OperationErrorKeys.LoadTasksInvalidResponse);
         }
         catch (Exception)
         {
-            return OperationResult<IReadOnlyList<TaskItem>>.Fail(UnexpectedErrorMessage);
+            return OperationResult<IReadOnlyList<TaskItem>>.Fail(OperationErrorKeys.LoadTasksUnexpectedError);
         }
     }
 }
