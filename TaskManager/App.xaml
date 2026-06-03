@@ -2,9 +2,25 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:viewModels="clr-namespace:TaskManager.ViewModels;assembly=TaskManager.ViewModels"
-             xmlns:core="clr-namespace:TaskManager.Resources.Core;assembly=TaskManager.Resources">
+             xmlns:core="clr-namespace:TaskManager.Resources.Core;assembly=TaskManager.Resources"
+             xmlns:converters="clr-namespace:TaskManager.Converters">
     <Application.Resources>
-        <core:LocalizationManager x:Key="LocalizationManager" />
-        <viewModels:ViewModelLocator x:Key="Locator" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/Brushes.xaml" />
+                <ResourceDictionary Source="Styles/TextStyles.xaml" />
+                <ResourceDictionary Source="Styles/GlyphsStyles.xaml" />
+                <ResourceDictionary Source="Styles/ButtonStyles.xaml" />
+                <ResourceDictionary Source="Styles/ComboBoxStyles.xaml" />
+                <ResourceDictionary Source="Styles/FilterDropDownStyles.xaml" />
+                <ResourceDictionary Source="Styles/ListViewStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <core:LocalizationManager x:Key="LocalizationManager" />
+            <viewModels:ViewModelLocator x:Key="Locator" />
+
+            <converters:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter" />
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

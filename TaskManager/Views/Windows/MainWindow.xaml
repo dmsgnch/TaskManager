@@ -1,13 +1,515 @@
 ﻿<Window x:Class="TaskManager.Views.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dialogs="clr-namespace:TaskManager.Views.Dialogs"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:TaskManager.ViewModels.Dialogs;assembly=TaskManager.ViewModels"
+        xmlns:userControls="clr-namespace:TaskManager.Views.Controls.UserControls"
         mc:Ignorable="d"
-        Title="MainWindow" 
-        Height="450" 
-        Width="800">
+        Title="Task manager"
+        Background="{StaticResource WindowsBackGroundBrush}"
+        Width="1280"
+        Height="720"
+        MinWidth="900"
+        MinHeight="600"
+        DataContext="{Binding Path=MainWindowViewModel, Source={StaticResource Locator}}">
     <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
+            <Grid x:Name="TitlePanel"
+                  Grid.Row="0"
+                  Margin="24 18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="{Binding Path=[Tasks], Mode=OneWay, Source={StaticResource LocalizationManager}}"
+                           FontSize="24"
+                           Foreground="{StaticResource AccentBrush}" />
+
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center"
+                               Text="EN"
+                               FontSize="16"
+                               Foreground="{StaticResource BlackBrush}" />
+
+                    <ToggleButton Margin="12 0"
+                                  VerticalAlignment="Center"
+                                  Style="{StaticResource LanguageToggleButtonStyle}"
+                                  IsChecked="{Binding Path=IsUkrButtonChecked, Mode=TwoWay}" />
+
+                    <TextBlock VerticalAlignment="Center"
+                               Text="UA"
+                               FontSize="16"
+                               Foreground="{StaticResource BlackBrush}" />
+
+                </StackPanel>
+            </Grid>
+
+            <Grid x:Name="Toolbar"
+                  Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*"
+                                      MinWidth="300" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Margin="24 0"
+                        Background="{StaticResource AccentBrush}"
+                        Foreground="{StaticResource WhiteBrush}"
+                        Style="{StaticResource RoundedButtonStyle}"
+                        Command="{Binding Path=AddTaskCommand, Mode=OneWay}"
+                        Padding="0"
+                        Height="40">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="10 0">
+                        <TextBlock Style="{StaticResource GlyphAddStyle}"
+                                   Margin="0 0 12 0" />
+
+                        <TextBlock Text="{Binding Path=[AddTask], Mode=OneWay, Source={StaticResource LocalizationManager}}"
+                                   FontSize="16" />
+                    </StackPanel>
+                </Button>
+
+                <TextBox Grid.Column="1"
+                         Height="40"
+                         Padding="10 0"
+                         Style="{StaticResource RoundedTextBoxWithPlaceholderStyle}"
+                         Text="{Binding SearchText,
+                                        Mode=OneWayToSource,
+                                        UpdateSourceTrigger=PropertyChanged}"
+                         Tag="{Binding Path=[FindTaskPlaceholder], Mode=OneWay, Source={StaticResource LocalizationManager}}"/>
+
+
+                <ComboBox Grid.Column="2"
+                          Margin="24 0"
+                          MinWidth="200"
+                          ItemsSource="{Binding Path=CompletionFilterModes}"
+                          DisplayMemberPath="DisplayName"
+                          SelectedItem="{Binding Path=SelectedCompletionFilterMode, Mode=TwoWay}"
+                          Style="{StaticResource RoundedHeaderComboBoxStyle}" />
+
+                <Grid Grid.Column="3">
+                    <ToggleButton x:Name="UserFilterButton"
+                                  Height="40"
+                                  Tag="{StaticResource GlyphPerson}"
+                                  Content="{Binding Path=UserFilterText}"
+                                  Style="{StaticResource HeaderFilterToggleButtonStyle}" />
+
+                    <Popup IsOpen="{Binding Path=IsChecked,
+                                            ElementName=UserFilterButton,
+                                            Mode=TwoWay}"
+                           VerticalOffset="4"
+                           PlacementTarget="{Binding ElementName=UserFilterButton}"
+                           Placement="Bottom"
+                           AllowsTransparency="True"
+                           StaysOpen="False"
+                           PopupAnimation="Slide">
+                        <Border MinWidth="{Binding Path=ActualWidth,
+                                                   ElementName=UserFilterButton}"
+                                MaxHeight="280"
+                                Margin="0 6 0 0"
+                                Padding="6"
+                                Background="#F5F5F5"
+                                BorderBrush="#D0D0D0"
+                                BorderThickness="1"
+                                CornerRadius="12">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding Path=UserFilters}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding Path=DisplayName}"
+                                                      IsChecked="{Binding Path=IsSelected,
+                                                                          Mode=TwoWay,
+                                                                          UpdateSourceTrigger=PropertyChanged}"
+                                                      Style="{StaticResource FilterCheckBoxButtonStyle}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Border>
+                    </Popup>
+                </Grid>
+
+                <Button Grid.Column="4"
+                        Margin="24 0"
+                        ToolTipService.ToolTip="{Binding Path=[ReloadTasks], Mode=OneWay, Source={StaticResource LocalizationManager}}"
+                        Command="{Binding Path=ReloadTasksCommand}"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        Foreground="{StaticResource BlackBrush}"
+                        Style="{StaticResource RoundedButtonStyle}"
+                        Padding="0"
+                        Height="40"
+                        Width="40">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource GlyphUpdateStyle}"
+                                   FontSize="18">
+                            <TextBlock.RenderTransform>
+                                <TranslateTransform X="0.5"
+                                                    Y="0.5" />
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <Grid Grid.Row="2"
+                  Visibility="{Binding Path=ShowLoadingControl, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='invert'}"
+                  Margin="24 24 24 18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ListView Grid.Column="0"
+                          ItemsSource="{Binding FilteredTaskItems}"
+                          SelectedItem="{Binding SelectedTaskItem, Mode=TwoWay}"
+                          Style="{StaticResource TaskItemsListViewStyle}"
+                          ItemContainerStyle="{StaticResource TaskItemsListViewItemStyle}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="90" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="120" />
+                                    <ColumnDefinition Width="90" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Path=[Task], Mode=OneWay, Source={StaticResource LocalizationManager}}"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           Foreground="#202020"
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" />
+
+                                <!-- TaskId -->
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Center"
+                                            Margin="6,0,0,0">
+                                    <TextBlock Text="#"
+                                               Foreground="#8A8A8A"
+                                               FontSize="13" />
+                                    <TextBlock Text="{Binding Id}"
+                                               Foreground="#606060"
+                                               FontSize="13" />
+                                </StackPanel>
+
+                                <!-- Title -->
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding Title}"
+                                           FontSize="14"
+                                           Foreground="#303030"
+                                           VerticalAlignment="Center"
+                                           Margin="12,0,0,0"
+                                           TextTrimming="CharacterEllipsis" />
+
+                                <!-- Status -->
+                                <Border Grid.Column="3"
+                                        BorderThickness="1"
+                                        CornerRadius="12"
+                                        Padding="10,3"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        Margin="12,0,0,0">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background"
+                                                    Value="#FFF7E6" />
+                                            <Setter Property="BorderBrush"
+                                                    Value="#F3D59B" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=IsCompleted}"
+                                                             Value="True">
+                                                    <Setter Property="Background"
+                                                            Value="#EAF7ED" />
+                                                    <Setter Property="BorderBrush"
+                                                            Value="#CFE8D4" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+
+                                    <TextBlock FontSize="12"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text"
+                                                        Value="{Binding Path=[InProgress], Mode=OneWay, Source={StaticResource LocalizationManager}}" />
+                                                <Setter Property="Foreground"
+                                                        Value="#8A5A00" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Path=IsCompleted}"
+                                                                 Value="True">
+                                                        <Setter Property="Text"
+                                                                Value="{Binding Path=[Completed], Mode=OneWay, Source={StaticResource LocalizationManager}}" />
+                                                        <Setter Property="Foreground"
+                                                                Value="#237A36" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Border>
+
+                                <!-- UserId -->
+                                <StackPanel Grid.Column="4"
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Right">
+                                    <TextBlock Text="{Binding Path=[User], Mode=OneWay, Source={StaticResource LocalizationManager}}"
+                                               FontSize="13"
+                                               Foreground="#8A8A8A"
+                                               Margin="0,0,4,0" />
+                                    <TextBlock Text="{Binding UserId}"
+                                               FontSize="13"
+                                               Foreground="#606060" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <Border Grid.Column="1"
+                        Width="340"
+                        Margin="18 0 0 0"
+                        Background="{StaticResource WhiteBrush}"
+                        BorderBrush="#DADADA"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Visibility="{Binding Path=SelectedTaskItem, Converter={StaticResource NotNullToVisibilityConverter}}">
+                    <Grid>
+                        <Grid Margin="20">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{Binding Path=SelectedTaskItem.Title}"
+                                               Margin="0 6 24 0"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               Foreground="#202020"
+                                               TextWrapping="Wrap" />
+
+                                    <StackPanel Orientation="Horizontal"
+                                                Margin="0 8 0 0">
+                                        <TextBlock Text="#"
+                                                   FontSize="13"
+                                                   Foreground="#8A8A8A" />
+                                        <TextBlock Text="{Binding Path=SelectedTaskItem.Id}"
+                                                   FontSize="13"
+                                                   Foreground="#606060" />
+
+                                        <TextBlock Text="  |  "
+                                                   FontSize="13"
+                                                   Foreground="#B0B0B0" />
+
+                                        <TextBlock Text="{Binding Path=[User], Mode=OneWay, Source={StaticResource LocalizationManager}}"
+                                                   FontSize="13"
+                                                   Foreground="#8A8A8A"
+                                                   Margin="0,0,4,0" />
+                                        <TextBlock Text="{Binding Path=SelectedTaskItem.UserId}"
+                                                   FontSize="13"
+                                                   Foreground="#606060" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+
+                            <Border Grid.Row="1"
+                                    Margin="0 18 0 0"
+                                    Padding="12 8"
+                                    BorderThickness="1"
+                                    CornerRadius="8">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background"
+                                                Value="#FFF7E6" />
+                                        <Setter Property="BorderBrush"
+                                                Value="#F3D59B" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=SelectedTaskItem.IsCompleted}"
+                                                         Value="True">
+                                                <Setter Property="Background"
+                                                        Value="#EAF7ED" />
+                                                <Setter Property="BorderBrush"
+                                                        Value="#CFE8D4" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border x:Name="StatusDot"
+                                            Width="10"
+                                            Height="10"
+                                            CornerRadius="5"
+                                            VerticalAlignment="Center"
+                                            Margin="0 0 10 0">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background"
+                                                        Value="#F59E0B" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Path=SelectedTaskItem.IsCompleted}"
+                                                                 Value="True">
+                                                        <Setter Property="Background"
+                                                                Value="#43A047" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
+
+                                    <TextBlock x:Name="StatusTextBlock"
+                                               Grid.Column="1"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text"
+                                                        Value="{Binding Path=[InProgress], Mode=OneWay, Source={StaticResource LocalizationManager}}" />
+                                                <Setter Property="Foreground"
+                                                        Value="#8A5A00" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Path=SelectedTaskItem.IsCompleted}"
+                                                                 Value="True">
+                                                        <Setter Property="Text"
+                                                                Value="{Binding Path=[Completed], Mode=OneWay, Source={StaticResource LocalizationManager}}" />
+                                                        <Setter Property="Foreground"
+                                                                Value="#237A36" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+
+                            <Grid Grid.Row="2"
+                                  Margin="0 18 0 0"
+                                  VerticalAlignment="Top">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Button Grid.Column="0"
+                                        Height="40"
+                                        Margin="0 0 6 0"
+                                        Padding="0"
+                                        Background="{StaticResource AccentBrush}"
+                                        Foreground="{StaticResource WhiteBrush}"
+                                        BorderThickness="0"
+                                        Command="{Binding Path=EditSelectedTaskCommand}"
+                                        Style="{StaticResource RoundedButtonStyle}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource GlyphEditStyle}"
+                                                   Margin="0 0 8 0" />
+                                        <TextBlock Text="{Binding Path=[Edit], Mode=OneWay, Source={StaticResource LocalizationManager}}"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold" />
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Grid.Column="1"
+                                        Height="40"
+                                        Margin="6 0 0 0"
+                                        Padding="0"
+                                        Background="#F2F2F2"
+                                        Foreground="#202020"
+                                        BorderBrush="#DADADA"
+                                        BorderThickness="1"
+                                        Command="{Binding Path=CloseSelectedTaskCommand}"
+                                        Style="{StaticResource RoundedButtonStyle}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource GlyphCloseStyle}"
+                                                   Margin="0 0 8 0" />
+                                        <TextBlock Text="{Binding Path=[Close], Mode=OneWay, Source={StaticResource LocalizationManager}}"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold" />
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </Grid>
+
+                        <Button Width="34"
+                                Height="34"
+                                Margin="12"
+                                Padding="0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                ToolTipService.ToolTip="{Binding Path=[Close], Mode=OneWay, Source={StaticResource LocalizationManager}}"
+                                Foreground="{StaticResource BlackBrush}"
+                                Command="{Binding Path=CloseSelectedTaskCommand}"
+                                Style="{StaticResource RoundedButtonStyle}">
+                            <TextBlock Style="{StaticResource GlyphCloseStyle}"
+                                       FontSize="14" />
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <userControls:LoadingSpinnerControl Grid.Row="2"
+                                                Visibility="{Binding Path=ShowLoadingControl, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </Grid>
+
+        <Grid Panel.ZIndex="10"
+              Background="#66000000"
+              Visibility="{Binding Path=DialogViewModel,
+                                   Converter={StaticResource NotNullToVisibilityConverter}}">
+            <Border Background="{StaticResource WhiteBrush}"
+                    BorderBrush="#DADADA"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Border.Resources>
+                    <DataTemplate DataType="{x:Type vm:TaskEditDialogViewModel}">
+                        <dialogs:TaskEditDialogControl />
+                    </DataTemplate>
+                </Border.Resources>
+
+                <ContentControl HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch"
+                                Content="{Binding Path=DialogViewModel, Mode=OneWay}" />
+            </Border>
+        </Grid>
     </Grid>
 </Window>

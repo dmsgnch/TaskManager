@@ -20,11 +20,19 @@
       <XamlRuntime>Wpf</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Styles\ListViewStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Behaviors\" />
-    <Folder Include="Styles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Fonts\SegoeFluentIcons.ttf" />
   </ItemGroup>
 
   <ItemGroup>
