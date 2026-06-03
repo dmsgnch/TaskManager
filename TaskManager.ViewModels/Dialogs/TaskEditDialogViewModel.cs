@@ -44,7 +44,8 @@ public partial class TaskEditDialogViewModel : ObservableObject, ITaskEditDialog
     {
         IsCreationMode = taskItem is null;
 
-        var itemParams = taskItem?.ToTaskEditParams() ?? new TaskEditParams();
+        var itemParams = taskItem?.ToTaskEditParams()
+                         ?? new TaskEditParams(string.Empty, 0, false);
 
         DismissDialog = new TaskCompletionSource<OperationResult<TaskEditParams>>();
 
