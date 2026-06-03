@@ -1,4 +1,5 @@
 using System.Windows.Threading;
+using Serilog;
 using TaskManager.ViewModels.Abstracts;
 
 namespace TaskManager.Providers;
@@ -9,7 +10,7 @@ public class UiDispatcher : IUiDispatcher
 
     public UiDispatcher(Dispatcher dispatcher)
     {
-        _dispatcher = dispatcher;
+        _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
     }
 
     public bool CheckAccess()
@@ -17,53 +18,122 @@ public class UiDispatcher : IUiDispatcher
         return _dispatcher.CheckAccess();
     }
 
-    public Task InvokeAsync(Action action)
+    public async Task InvokeAsync(Action action)
     {
         ArgumentNullException.ThrowIfNull(action);
 
-        if (_dispatcher.CheckAccess())
+        try
         {
-            action();
-            return Task.CompletedTask;
-        }
+            if (_dispatcher.CheckAccess())
+            {
+                action();
+                return;
+            }
 
-        return _dispatcher.InvokeAsync(action).Task;
+            await _dispatcher.InvokeAsync(action).Task;
+        }
+        catch (Exception ex)
+        {
+            HandleException(ex);
+            throw;
+        }
     }
 
     public async Task InvokeAsync(Func<Task> asyncAction)
     {
         ArgumentNullException.ThrowIfNull(asyncAction);
 
-        if (_dispatcher.CheckAccess())
+        try
         {
-            await asyncAction();
-            return;
-        }
+            if (_dispatcher.CheckAccess())
+            {
+                await asyncAction();
+                return;
+            }
 
-        await _dispatcher.InvokeAsync(asyncAction).Task.Unwrap();
+            Task task = await _dispatcher.InvokeAsync(asyncAction).Task;
+            await task;
+        }
+        catch (Exception ex)
+        {
+            HandleException(ex);
+            throw;
+        }
     }
 
-    public Task<T> InvokeAsync<T>(Func<T> function)
+    public async Task<T> InvokeAsync<T>(Func<T> function)
     {
         ArgumentNullException.ThrowIfNull(function);
 
-        if (_dispatcher.CheckAccess())
+        try
         {
-            return Task.FromResult(function());
-        }
+            if (_dispatcher.CheckAccess())
+            {
+                return function();
+            }
 
-        return _dispatcher.InvokeAsync(function).Task;
+            return await _dispatcher.InvokeAsync(function).Task;
+        }
+        catch (Exception ex)
+        {
+            HandleException(ex);
+            throw;
+        }
     }
 
     public async Task<T> InvokeAsync<T>(Func<Task<T>> asyncFunction)
     {
         ArgumentNullException.ThrowIfNull(asyncFunction);
 
-        if (_dispatcher.CheckAccess())
+        try
         {
-            return await asyncFunction();
-        }
+            if (_dispatcher.CheckAccess())
+            {
+                return await asyncFunction();
+            }
 
-        return await _dispatcher.InvokeAsync(asyncFunction).Task.Unwrap();
+            Task<T> task = await _dispatcher.InvokeAsync(asyncFunction).Task;
+            return await task;
+        }
+        catch (Exception ex)
+        {
+            HandleException(ex);
+            throw;
+        }
+    }
+
+    public void RunAndForget(Action action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        _ = RunAndForgetInternalAsync(() =>
+        {
+            action();
+            return Task.CompletedTask;
+        });
+    }
+
+    public void RunAndForget(Func<Task> asyncAction)
+    {
+        ArgumentNullException.ThrowIfNull(asyncAction);
+
+        _ = RunAndForgetInternalAsync(asyncAction);
+    }
+
+    private async Task RunAndForgetInternalAsync(Func<Task> asyncAction)
+    {
+        try
+        {
+            await InvokeAsync(asyncAction);
+        }
+        catch (Exception ex)
+        {
+            Log.Debug(ex, "RunAndForget UI operation failed.");
+        }
+    }
+
+    private void HandleException(Exception exception)
+    {
+        Log.Error(exception, "UI dispatcher operation failed.");
     }
 }
