@@ -6,29 +6,23 @@ namespace TaskManager.Resources.Core;
 
 public class LocalizationManager : INotifyPropertyChanged
 {
-    public CommonResources.CommonResources CommonResources
-    {
-        get;
-        private set
-        {
-            if (ReferenceEquals(field, value))
-            {
-                return;
-            }
-
-            field = value;
-            OnPropertyChanged();
-        }
-    } = new();
+    private const string IndexerPropertyName = "Item[]";
 
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    public string this[string key] =>
+        CommonResources.CommonResources.ResourceManager.GetString(
+            key,
+            CultureInfo.CurrentUICulture) ?? key;
 
     public void UpdateCurrentCulture(CultureInfo culture)
     {
         CultureInfo.CurrentCulture = culture;
         CultureInfo.CurrentUICulture = culture;
 
-        CommonResources = new CommonResources.CommonResources();
+        CommonResources.CommonResources.Culture = culture;
+
+        OnPropertyChanged(IndexerPropertyName);
     }
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

@@ -61,11 +61,326 @@ namespace TaskManager.Resources.CommonResources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HelloWorld.
+        ///   Looks up a localized string similar to Add task.
         /// </summary>
-        public static string HelloWorld {
+        public static string AddTask {
             get {
-                return ResourceManager.GetString("HelloWorld", resourceCulture);
+                return ResourceManager.GetString("AddTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string All {
+            get {
+                return ResourceManager.GetString("All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All users.
+        /// </summary>
+        public static string AllUsers {
+            get {
+                return ResourceManager.GetString("AllUsers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Close {
+            get {
+                return ResourceManager.GetString("Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string Completed {
+            get {
+                return ResourceManager.GetString("Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm.
+        /// </summary>
+        public static string Confirm {
+            get {
+                return ResourceManager.GetString("Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create task..
+        /// </summary>
+        public static string CreateTaskFailed {
+            get {
+                return ResourceManager.GetString("CreateTaskFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to edit task..
+        /// </summary>
+        public static string EditTaskFailed {
+            get {
+                return ResourceManager.GetString("EditTaskFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Find task....
+        /// </summary>
+        public static string FindTaskPlaceholder {
+            get {
+                return ResourceManager.GetString("FindTaskPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to initialize tasks..
+        /// </summary>
+        public static string InitializeTasksFailed {
+            get {
+                return ResourceManager.GetString("InitializeTasksFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In progress.
+        /// </summary>
+        public static string InProgress {
+            get {
+                return ResourceManager.GetString("InProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server returned an empty response..
+        /// </summary>
+        public static string LoadTasksEmptyResponse {
+            get {
+                return ResourceManager.GetString("LoadTasksEmptyResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server returned tasks in an unexpected format..
+        /// </summary>
+        public static string LoadTasksInvalidResponse {
+            get {
+                return ResourceManager.GetString("LoadTasksInvalidResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to load tasks. Check your internet connection and try again..
+        /// </summary>
+        public static string LoadTasksNetworkError {
+            get {
+                return ResourceManager.GetString("LoadTasksNetworkError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server returned an error. Try again later..
+        /// </summary>
+        public static string LoadTasksServerError {
+            get {
+                return ResourceManager.GetString("LoadTasksServerError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Task loading timed out. Try again later..
+        /// </summary>
+        public static string LoadTasksTimeout {
+            get {
+                return ResourceManager.GetString("LoadTasksTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected error occurred while loading tasks..
+        /// </summary>
+        public static string LoadTasksUnexpectedError {
+            get {
+                return ResourceManager.GetString("LoadTasksUnexpectedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reload tasks.
+        /// </summary>
+        public static string ReloadTasks {
+            get {
+                return ResourceManager.GetString("ReloadTasks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} users.
+        /// </summary>
+        public static string SelectedUsersFormat {
+            get {
+                return ResourceManager.GetString("SelectedUsersFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Task.
+        /// </summary>
+        public static string Task {
+            get {
+                return ResourceManager.GetString("Task", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Task creating.
+        /// </summary>
+        public static string TaskCreating {
+            get {
+                return ResourceManager.GetString("TaskCreating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fill in task details and confirm the changes..
+        /// </summary>
+        public static string TaskDialogInstruction {
+            get {
+                return ResourceManager.GetString("TaskDialogInstruction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Task editing.
+        /// </summary>
+        public static string TaskEditing {
+            get {
+                return ResourceManager.GetString("TaskEditing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Task was not found..
+        /// </summary>
+        public static string TaskNotFound {
+            get {
+                return ResourceManager.GetString("TaskNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tasks.
+        /// </summary>
+        public static string Tasks {
+            get {
+                return ResourceManager.GetString("Tasks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Task title....
+        /// </summary>
+        public static string TaskTitlePlaceholder {
+            get {
+                return ResourceManager.GetString("TaskTitlePlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Task title is required..
+        /// </summary>
+        public static string TaskTitleRequired {
+            get {
+                return ResourceManager.GetString("TaskTitleRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title.
+        /// </summary>
+        public static string Title {
+            get {
+                return ResourceManager.GetString("Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected operation error..
+        /// </summary>
+        public static string UnexpectedOperationError {
+            get {
+                return ResourceManager.GetString("UnexpectedOperationError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User.
+        /// </summary>
+        public static string User {
+            get {
+                return ResourceManager.GetString("User", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User {0}.
+        /// </summary>
+        public static string UserFormat {
+            get {
+                return ResourceManager.GetString("UserFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User id.
+        /// </summary>
+        public static string UserId {
+            get {
+                return ResourceManager.GetString("UserId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User id must be greater than zero..
+        /// </summary>
+        public static string UserIdMustBeGreaterThanZero {
+            get {
+                return ResourceManager.GetString("UserIdMustBeGreaterThanZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User id....
+        /// </summary>
+        public static string UserIdPlaceholder {
+            get {
+                return ResourceManager.GetString("UserIdPlaceholder", resourceCulture);
             }
         }
     }

@@ -117,7 +117,112 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="HelloWorld" xml:space="preserve">
-    <value>HelloWorld</value>
+  <data name="Tasks" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="Task" xml:space="preserve">
+    <value>Task</value>
+  </data>
+  <data name="FindTaskPlaceholder" xml:space="preserve">
+    <value>Find task...</value>
+  </data>
+  <data name="AddTask" xml:space="preserve">
+    <value>Add task</value>
+  </data>
+  <data name="InProgress" xml:space="preserve">
+    <value>In progress</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="ReloadTasks" xml:space="preserve">
+    <value>Reload tasks</value>
+  </data>
+  <data name="UserId" xml:space="preserve">
+    <value>User id</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="TaskDialogInstruction" xml:space="preserve">
+    <value>Fill in task details and confirm the changes.</value>
+  </data>
+  <data name="TaskTitlePlaceholder" xml:space="preserve">
+    <value>Task title...</value>
+  </data>
+  <data name="UserIdPlaceholder" xml:space="preserve">
+    <value>User id...</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="AllUsers" xml:space="preserve">
+    <value>All users</value>
+  </data>
+  <data name="UserFormat" xml:space="preserve">
+    <value>User {0}</value>
+  </data>
+  <data name="SelectedUsersFormat" xml:space="preserve">
+    <value>{0} users</value>
+  </data>
+  <data name="TaskCreating" xml:space="preserve">
+    <value>Task creating</value>
+  </data>
+  <data name="TaskEditing" xml:space="preserve">
+    <value>Task editing</value>
+  </data>
+  <data name="UnexpectedOperationError" xml:space="preserve">
+    <value>Unexpected operation error.</value>
+  </data>
+  <data name="InitializeTasksFailed" xml:space="preserve">
+    <value>Failed to initialize tasks.</value>
+  </data>
+  <data name="CreateTaskFailed" xml:space="preserve">
+    <value>Failed to create task.</value>
+  </data>
+  <data name="EditTaskFailed" xml:space="preserve">
+    <value>Failed to edit task.</value>
+  </data>
+  <data name="TaskTitleRequired" xml:space="preserve">
+    <value>Task title is required.</value>
+  </data>
+  <data name="UserIdMustBeGreaterThanZero" xml:space="preserve">
+    <value>User id must be greater than zero.</value>
+  </data>
+  <data name="TaskNotFound" xml:space="preserve">
+    <value>Task was not found.</value>
+  </data>
+  <data name="LoadTasksEmptyResponse" xml:space="preserve">
+    <value>Server returned an empty response.</value>
+  </data>
+  <data name="LoadTasksInvalidResponse" xml:space="preserve">
+    <value>Server returned tasks in an unexpected format.</value>
+  </data>
+  <data name="LoadTasksNetworkError" xml:space="preserve">
+    <value>Unable to load tasks. Check your internet connection and try again.</value>
+  </data>
+  <data name="LoadTasksTimeout" xml:space="preserve">
+    <value>Task loading timed out. Try again later.</value>
+  </data>
+  <data name="LoadTasksUnexpectedError" xml:space="preserve">
+    <value>Unexpected error occurred while loading tasks.</value>
+  </data>
+  <data name="LoadTasksServerError" xml:space="preserve">
+    <value>Server returned an error. Try again later.</value>
   </data>
 </root>

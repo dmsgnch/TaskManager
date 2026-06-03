@@ -117,7 +117,112 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="HelloWorld" xml:space="preserve">
-    <value>HelloWorld</value>
+  <data name="Tasks" xml:space="preserve">
+    <value>Задачі</value>
+  </data>
+  <data name="Task" xml:space="preserve">
+    <value>Задача</value>
+  </data>
+  <data name="FindTaskPlaceholder" xml:space="preserve">
+    <value>Знайти задачу...</value>
+  </data>
+  <data name="AddTask" xml:space="preserve">
+    <value>Додати задачу</value>
+  </data>
+  <data name="InProgress" xml:space="preserve">
+    <value>В процесі</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Завершено</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Підтвердити</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Відмінити</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Редагувати</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Користувач</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрити</value>
+  </data>
+  <data name="ReloadTasks" xml:space="preserve">
+    <value>Перезавантажити задачі</value>
+  </data>
+  <data name="UserId" xml:space="preserve">
+    <value>Id користувача</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Заголовок</value>
+  </data>
+  <data name="TaskDialogInstruction" xml:space="preserve">
+    <value>Введіть деталі завдання та підтвердьте зміни.</value>
+  </data>
+  <data name="TaskTitlePlaceholder" xml:space="preserve">
+    <value>Заголовок задачі...</value>
+  </data>
+  <data name="UserIdPlaceholder" xml:space="preserve">
+    <value>Id користувача...</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Усі</value>
+  </data>
+  <data name="AllUsers" xml:space="preserve">
+    <value>Усі користувачі</value>
+  </data>
+  <data name="UserFormat" xml:space="preserve">
+    <value>Користувач {0}</value>
+  </data>
+  <data name="SelectedUsersFormat" xml:space="preserve">
+    <value>{0} користувачів</value>
+  </data>
+  <data name="TaskCreating" xml:space="preserve">
+    <value>Створення задачі</value>
+  </data>
+  <data name="TaskEditing" xml:space="preserve">
+    <value>Редагування задачі</value>
+  </data>
+  <data name="UnexpectedOperationError" xml:space="preserve">
+    <value>Неочікувана помилка операції.</value>
+  </data>
+  <data name="InitializeTasksFailed" xml:space="preserve">
+    <value>Не вдалося ініціалізувати задачі.</value>
+  </data>
+  <data name="CreateTaskFailed" xml:space="preserve">
+    <value>Не вдалося створити задачу.</value>
+  </data>
+  <data name="EditTaskFailed" xml:space="preserve">
+    <value>Не вдалося відредагувати задачу.</value>
+  </data>
+  <data name="TaskTitleRequired" xml:space="preserve">
+    <value>Заголовок задачі обов'язковий.</value>
+  </data>
+  <data name="UserIdMustBeGreaterThanZero" xml:space="preserve">
+    <value>Id користувача має бути більшим за нуль.</value>
+  </data>
+  <data name="TaskNotFound" xml:space="preserve">
+    <value>Задачу не знайдено.</value>
+  </data>
+  <data name="LoadTasksEmptyResponse" xml:space="preserve">
+    <value>Сервер повернув порожню відповідь.</value>
+  </data>
+  <data name="LoadTasksInvalidResponse" xml:space="preserve">
+    <value>Сервер повернув задачі у неочікуваному форматі.</value>
+  </data>
+  <data name="LoadTasksNetworkError" xml:space="preserve">
+    <value>Не вдалося завантажити задачі. Перевірте підключення до інтернету та спробуйте ще раз.</value>
+  </data>
+  <data name="LoadTasksTimeout" xml:space="preserve">
+    <value>Час завантаження задач вичерпано. Спробуйте пізніше.</value>
+  </data>
+  <data name="LoadTasksUnexpectedError" xml:space="preserve">
+    <value>Під час завантаження задач сталася неочікувана помилка.</value>
+  </data>
+  <data name="LoadTasksServerError" xml:space="preserve">
+    <value>Сервер повернув помилку. Спробуйте пізніше.</value>
   </data>
 </root>
